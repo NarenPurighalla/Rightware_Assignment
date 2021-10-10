@@ -1,0 +1,6 @@
+---
+app_clone_path: /home/naren_puri/Rightaware_Assignment/ansible_webapp/webapp
+user: naren_puri
+git_repo: https://github.com/epidemian/snake.git
+dockerfile_location: /home/naren_puri/Rightaware_Assignment/ansible_webapp
+

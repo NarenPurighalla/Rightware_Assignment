@@ -1,0 +1,48 @@
+---
+
+- hosts: 127.0.0.1
+  connection: local
+
+  tasks:
+  - name: Check if Docker Service is running
+    service_facts:
+  - debug:
+      msg: Docker service is running
+    when: "'docker' in services"
+
+  - name: Create application directory
+    file:
+      path: '{{ app_clone_path }}'
+      state: directory
+      owner: '{{ user }}'
+      group: '{{ user }}'
+      mode: 0775
+
+  - name: Clone the github repository of the webapp
+    git:
+      repo: '{{ git_repo }}'
+      dest: '{{ app_clone_path }}'
+      clone: yes
+      update: yes
+
+  - name: Build image from Dockerfile
+    docker_image:
+      name: snake
+      build:
+        path: '{{ dockerfile_location }}'
+      source: build
+      state: present
+
+  - name: Run the docker container
+    docker_container:
+      image: snake
+      name: snake_game
+      state: started
+      auto_remove: true
+      ports:
+        - "8080:80"
+
+  - name: Get the IP Address of the container
+    shell: docker inspect snake_game | grep IPAddress
+    register: IPAddress
+  - debug: var=IPAddress
